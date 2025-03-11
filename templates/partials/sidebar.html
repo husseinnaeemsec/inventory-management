@@ -1,0 +1,89 @@
+<aside class="w-full flex flex-col justify-between sticky top-5 overflow-x-hidden rounded-lg p-5 bg-blue-500 text-lg text-white">
+    <ul class="space-y-4">
+        <!-- Home -->
+        <li class="link">
+            <a href="/" class="w-full  flex items-center rounded-md px-5 p-2 gap-x-2 {% if request.path == '/' %} bg-white text-blue-500 {% endif %}">
+                <i class="fa-solid fa-home"></i>
+                الرئيسية
+            </a>
+        </li>
+
+        <!-- Products -->
+        <li class="link">
+            <a href="/products/" class="w-full  flex items-center rounded-md px-5 p-2 gap-x-2 hover:bg-blue-600 {% if request.path == '/products/' %} bg-white text-blue-500 {% endif %}">
+                <i class="fa-solid fa-box"></i>
+                المنتجات
+            </a>
+        </li>
+
+        <!-- Inventory -->
+        <li class="link">
+            <a href="/inventory/" class="w-full  flex items-center rounded-md px-5 p-2 gap-x-2 hover:bg-blue-600 {% if request.path == '/inventory/' %} bg-white text-blue-500 {% endif %}">
+                <i class="fa-solid fa-warehouse"></i>
+                المخزون
+            </a>
+        </li>
+
+        <!-- Orders -->
+        <li class="link">
+            <a href="/orders/" class="w-full  flex items-center rounded-md px-5 p-2 gap-x-2 hover:bg-blue-600 {% if request.path == '/orders/' %} bg-white text-blue-500 {% endif %}">
+                <i class="fa-solid fa-shopping-cart"></i>
+                الطلبات
+            </a>
+        </li>
+
+        <!-- Suppliers -->
+        <li class="link">
+            <a href="/suppliers/" class="w-full  flex items-center rounded-md px-5 p-2 gap-x-2 hover:bg-blue-600 {% if request.path == '/suppliers/' %} bg-white text-blue-500 {% endif %}">
+                <i class="fa-solid fa-truck"></i>
+                الموردون
+            </a>
+        </li>
+
+        <!-- Customers -->
+        <li class="link">
+            <a href="/customers/" class="w-full  flex items-center rounded-md px-5 p-2 gap-x-2 hover:bg-blue-600 {% if request.path == '/customers/' %} bg-white text-blue-500 {% endif %}">
+                <i class="fa-solid fa-users"></i>
+                العملاء
+            </a>
+        </li>
+
+        <!-- Reports -->
+        <li class="link">
+            <a href="/reports/" class="w-full  flex items-center rounded-md px-5 p-2 gap-x-2 hover:bg-blue-600 {% if request.path == '/reports/' %} bg-white text-blue-500 {% endif %}">
+                <i class="fa-solid fa-chart-line"></i>
+                التقارير
+            </a>
+        </li>
+
+        <!-- Settings -->
+        <li class="link">
+            <a href="/settings/" class="w-full  flex items-center rounded-md px-5 p-2 gap-x-2 hover:bg-blue-600 {% if request.path == '/settings/' %} bg-white text-blue-500 {% endif %}">
+                <i class="fa-solid fa-cog"></i>
+                الإعدادات
+            </a>
+        </li>
+    </ul>
+    <!-- Logout -->
+    <li class="link list-none">
+        <a href="/logout/" class="w-full  flex items-center rounded-md px-5 p-2 gap-x-2 bg-blue-600 ">
+            <i class="fa-solid fa-sign-out-alt"></i>
+            تسجيل الخروج
+        </a>
+    </li>
+</aside>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded",function () {
+        gsap.from(".link",{
+            x: 100,
+            opacity: 0,
+        })
+        gsap.to(".link",{
+            x: 0,
+            opacity: 1,
+            stagger: 0.1,
+        })
+    })
+</script>

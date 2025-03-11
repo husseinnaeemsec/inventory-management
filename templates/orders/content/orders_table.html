@@ -1,0 +1,140 @@
+<div class="mx-auto p-4 bg-white shadow-lg rounded-lg">
+    <!-- Headers -->
+    <div class="flex items-center justify-between bg-gray-200 p-3 rounded-lg text-gray-700 font-semibold">
+        <div class="w-1/6 text-center">
+            <input class="w-5 h-5" type="checkbox" name="select-all-orders" id="">
+        </div>
+        <div class="w-2/6 text-center">العميل</div>
+        <div class="w-1/6 text-center">إجمالي المبلغ</div>
+        <div class="w-1/6 text-center">الحالة</div>
+        <div class="w-1/6 text-center">التاريخ</div>
+        <div class="w-1/6 text-center">الإجراء</div>
+    </div>
+
+    <!-- Order Rows -->
+    {% for order in page_obj %}
+    <div class="flex items-center justify-between border-b p-4">
+        <!-- Select Checkbox -->
+        <div class="w-1/6 flex justify-center">
+            <input type="checkbox" class="w-5 h-5">
+        </div>
+
+        <!-- Customer Info -->
+        <div class="w-2/6 flex items-center justify-center">
+            <span class="text-lg font-semibold">{{ order.customer }}</span>
+        </div>
+
+        <!-- Total Amount -->
+        <div class="w-1/6 text-center font-semibold">{{ order.get_total }}</div>
+
+        <!-- Payment Status -->
+        <div class="w-1/6 text-center">
+            <span class="font-semibold {% if order.payment_status == 'pending' %}text-gray-500{% elif order.payment_status == 'processing' %}text-blue-500{% elif order.payment_status == 'shipped' %}text-yellow-500{% elif order.payment_status == 'delivered' %}text-green-500{% else %}text-red-500{% endif %}">
+                {{ order.payment_status|capfirst }}
+            </span>
+        </div>
+
+        <!-- Created Date -->
+        <div class="w-1/6 text-center">{{ order.created_at|date:"Y-m-d" }}</div>
+
+        <!-- Actions -->
+        <div class="w-1/6 text-center text-gray-500">
+            <button data-container="#modal-{{order.id}}" class="show-modal"><i class="fa-solid fa-eye"></i></button>
+            <div id="modal-{{order.id}}" class="mx-auto hidden text-right text-black fixed w-full h-full inset-0 bg-black/10">
+                <div class="w-1/2 bg-white h-full overflow-y-auto p-5 space-y-5">
+                    <div class="flex items-center justify-between">
+                        <h1 class="text-3xl">{{ order.customer }}</h1>
+                        <button data-container="#modal-{{order.id}}" class="px-3 py-1 close-modal bg-gray-100 rounded-md"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <!-- Order Details -->
+                    <div class="space-y-5">
+                        <div class="grid lg:grid-cols-2 gap-3 grid-rows-2">
+                            <!-- Total Amount -->
+                            <div class="p-5 rounded-md flex flex-col gap-3 items-center justify-center text-center bg-white border shadow-lg">
+                                <span class="text-3xl text-blue-500"><i class="fa-solid fa-coins"></i></span>
+                                <h1 class="text-lg font-semibold">إجمالي المبلغ</h1>
+                                <span class="text-3xl font-bold">{{ order.total_amount }}</span>
+                            </div>
+
+                            <!-- Payment Status -->
+                            <div class="p-5 rounded-md flex flex-col gap-3 items-center justify-center text-center bg-white border shadow-lg">
+                                <span class="text-3xl text-gray-500"><i class="fa-solid fa-credit-card"></i></span>
+                                <h1 class="text-lg font-semibold">حالة الدفع</h1>
+                                <span class="text-3xl font-bold">{{ order.payment_status|capfirst }}</span>
+                            </div>
+
+                            <!-- Shipping Cost -->
+                            <div class="p-5 rounded-md flex flex-col gap-3 items-center justify-center text-center bg-white border shadow-lg">
+                                <span class="text-3xl text-green-500"><i class="fa-solid fa-truck"></i></span>
+                                <h1 class="text-lg font-semibold">تكلفة الشحن</h1>
+                                <span class="text-3xl font-bold">{{ order.shipping_cost }}</span>
+                            </div>
+
+                            <!-- Delivery Date -->
+                            <div class="p-5 rounded-md flex flex-col gap-3 items-center justify-center text-center bg-white border shadow-lg">
+                                <span class="text-3xl text-yellow-500"><i class="fa-solid fa-calendar-day"></i></span>
+                                <h1 class="text-lg font-semibold">تاريخ التسليم</h1>
+                                <span class="text-3xl font-bold">{{ order.delivery_date|date:"Y-m-d" }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Notes Section -->
+                        <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-center text-2xl font-bold mb-4">ملاحظات الطلب</h2>
+                            <p>{{ order.notes|default:"لا توجد ملاحظات" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    <div class="flex justify-center mt-4">
+        {% if page_obj.has_previous %}
+        <a href="?page=1" class="px-3 py-1 mx-1 bg-gray-200 rounded-lg">الأولى</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 mx-1 bg-gray-200 rounded-lg">السابق</a>
+        {% endif %}
+
+        <span class="px-3 py-1 mx-1 bg-blue-500 text-white rounded-lg">
+            صفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 mx-1 bg-gray-200 rounded-lg">التالي</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-1 mx-1 bg-gray-200 rounded-lg">الأخيرة</a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Ensure GSAP is loaded
+    if (typeof gsap !== "undefined") {
+        $('.show-modal, .close-modal').click(function (e) {
+            e.preventDefault();
+            let container = $($(this).data('container'));
+
+            if (container.hasClass('hidden')) {
+                // Animate to show
+                gsap.to(container, {
+                    duration: 0.5,
+                    opacity: 1,
+                    scale: 1,
+                    display: 'block',
+                    ease: 'power2.out'
+                });
+                container.removeClass('hidden');
+            } else {
+                // Animate to hide
+                gsap.to(container, {
+                    duration: 0.5,
+                    opacity: 0,
+                    scale: 0.8,
+                    onComplete: () => container.addClass('hidden')
+                });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,183 @@
+{% load product_tags  %}
+<div class="mx-auto p-4 bg-white shadow-lg rounded-lg">
+    <!-- Headers -->
+    <div class="flex items-center justify-between bg-gray-200 p-3 rounded-lg text-gray-700 font-semibold">
+        <div class="w-1/6 text-center">
+            <input class="w-5 h-5" type="checkbox" name="select-all-products" id="">
+        </div>
+        <div class="w-2/6 text-center">المنتج</div>
+        <div class="w-1/6 text-center">السعر</div>
+        <div class="w-1/6 text-center">التصنيف</div>
+        <div class="w-1/6 text-center">الكمية</div>
+        <div class="w-1/6 text-center">المبيعات</div>
+        <div class="w-1/6 text-center">الاداء</div>
+
+    </div>
+
+    <!-- Product Rows -->
+    {% for product in page_obj %}
+    <div class="flex items-center justify-between border-b p-4">
+        <!-- Select Checkbox -->
+        <div class="w-1/6 flex justify-center">
+            <input type="checkbox" class="w-5 h-5">
+        </div>
+
+        <!-- Image & Info -->
+        <div class="w-2/6 flex items-center">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                class="w-16 h-16 object-cover rounded-lg border">
+            <div class="mr-3 text-right">
+                <h3 class="text-lg font-semibold">{{ product.name }}</h3>
+                <p class="text-gray-500 text-sm">{{ product.description }}</p>
+            </div>
+        </div>
+
+        <!-- Price -->
+        <div class="w-1/6 text-center font-semibold">{{product.get_price}}</div>
+
+        <!-- Category -->
+        <div class="w-1/6 text-center flex items-center justify-center gap-2">
+            <i class="fas fa-tags text-gray-500"></i>
+            <span>{{ product.category }}</span>
+        </div>
+
+        <!-- Quantity -->
+        <div class="w-1/6 text-center">{{ product.quantity }}</div>
+
+        <!-- Sales -->
+        <div class="w-1/6 text-center flex items-center justify-center gap-2">
+            <span>{% get_product_sales product %}</span>
+        </div>
+        <div class="w-1/6 text-center text-gray-500">
+            <button data-container="#modal-{{product.id}}" class="show-modal" > <i class="fa-solid fa-dashboard"></i> </button>
+            <div id="modal-{{product.id}}" class="mx-auto hidden  text-right text-black  fixed w-full h-full inset-0 bg-black/10 ">
+                <div class="w-1/2 bg-white h-full overflow-y-auto p-5 space-y-5">
+                    <div class="flex items-center justify-between">
+                        <h1 class="text-3xl"> {{product.name}} </h1>
+                        <button  data-container="#modal-{{product.id}}" class="px-3 py-1 close-modal  bg-gray-100 rounded-md"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class=" space-y-5">
+                        <!-- Statistics Grid -->
+                        <div class="grid lg:grid-cols-2 gap-3 grid-rows-2">
+                            <!-- Total Sales -->
+                            <div
+                                class="p-5 rounded-md flex flex-col gap-3 items-center justify-center text-center bg-white border shadow-lg">
+                                <span class="text-3xl text-blue-500"> <i class="fa-solid fa-boxes"></i> </span>
+                                <h1 class="text-lg font-semibold">عدد المبيعات</h1>
+                                <span class="text-3xl font-bold">{% get_product_sales product %}</span>
+                            </div>
+
+                            <!-- Total Orders -->
+                            <div
+                                class="p-5 rounded-md flex flex-col gap-3 items-center justify-center text-center bg-white border shadow-lg">
+                                <span class="text-3xl text-green-500"> <i class="fa-solid fa-cart-shopping"></i> </span>
+                                <h1 class="text-lg font-semibold">عدد الطلبات</h1>
+                                <span class="text-3xl font-bold">{{product.orders_items.count}}</span>
+                            </div>
+
+                            <!-- Total Revenue -->
+                            <div
+                                class="p-5 rounded-md flex flex-col gap-3 items-center justify-center text-center bg-white border shadow-lg">
+                                <span class="text-3xl text-yellow-500"> <i class="fa-solid fa-coins"></i> </span>
+                                <h1 class="text-lg font-semibold">إجمالي الإيرادات</h1>
+                                <span class="text-3xl font-bold"> {% total_revenue product %} </span>
+                            </div>
+
+                            <!-- Total Customers -->
+                            <div
+                                class="p-5 rounded-md flex flex-col gap-3 items-center justify-center text-center bg-white border shadow-lg">
+                                <span class="text-3xl text-red-500"> <i class="fa-solid fa-users"></i> </span>
+                                <h1 class="text-lg font-semibold">عدد العملاء</h1>
+                                <span class="text-3xl font-bold">320</span>
+                            </div>
+                        </div>
+
+                        <!-- Chart Section -->
+                        <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-center text-2xl font-bold mb-4">إحصائيات المبيعات الشهرية</h2>
+                            <canvas id="chart-{{product.id}}"></canvas>
+                        </div>
+                        <!-- Chart.js Script -->
+                        <script>
+                            // Get the chart canvas
+                            var ctx = document.getElementById('chart-{{product.id}}').getContext('2d');
+
+                            // Sample sales data
+                            var salesChart = new Chart(ctx, {
+                                type: 'line', // You can change to 'line', 'pie', etc.
+                                data: {
+                                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                                    datasets: [{
+                                        label: 'عدد المبيعات',
+                                        data: [50, 75, 90, 120, 150, 200],
+                                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    <div class="flex justify-center mt-4">
+        {% if page_obj.has_previous %}
+        <a href="?page=1" class="px-3 py-1 mx-1 bg-gray-200 rounded-lg">الأولى</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 mx-1 bg-gray-200 rounded-lg">السابق</a>
+        {% endif %}
+
+        <span class="px-3 py-1 mx-1 bg-blue-500 text-white rounded-lg">
+            صفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 mx-1 bg-gray-200 rounded-lg">التالي</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-1 mx-1 bg-gray-200 rounded-lg">الأخيرة</a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Ensure GSAP is loaded
+if (typeof gsap !== "undefined") {
+    $('.show-modal, .close-modal').click(function (e) {
+        e.preventDefault();
+        let container = $($(this).data('container'));
+
+        if (container.hasClass('hidden')) {
+            // Animate to show
+            gsap.to(container, {
+                duration: 0.5,
+                opacity: 1,
+                scale: 1,
+                display: 'block',
+                ease: 'power2.out'
+            });
+            container.removeClass('hidden');
+        } else {
+            // Animate to hide
+            gsap.to(container, {
+                duration: 0.5,
+                opacity: 0,
+                scale: 0.8,
+                onComplete: () => container.addClass('hidden')
+            });
+        }
+    });
+}
+
+</script>

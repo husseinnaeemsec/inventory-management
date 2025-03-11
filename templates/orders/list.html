@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-2xl my-5 text-gray-500"> الطلبات </h1>
+<div class="flex items-center justify-between my-10">
+    <div class="flex items-center gap-5 ">
+        <!-- Sort Button -->
+        <div class="relative z-0 w-fit menu" data-menu="sort">
+            <button id="sort-button"
+                class="p-2 bg-gray-100 text-gray-500 rounded-md px-6 flex items-center justify-between gap-3">
+                <span> الترتيب </span>
+                <i class="fa-solid fa-sort"></i> <!-- Sort Icon -->
+            </button>
+            <!-- Sort Menu -->
+            <div id="sort-menu"
+                class="space-y-4 hidden absolute w-72 p-5 text-sm bg-white shadow border rounded-md top-[140%] z-10">
+                <div class="flex items-center gap-3">
+                    <input type="radio" value="customer" name="sort" id="">
+                    العميل
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="radio" value="total_amount" name="sort" id="">
+                    إجمالي المبلغ
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="radio" value="payment_status" name="sort" id="">
+                    حالة الدفع
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="radio" value="created_at" name="sort" id="">
+                    تاريخ الإنشاء
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Button -->
+        <div class="relative z-0 w-fit menu" data-menu="filter">
+            <button id="filter-button"
+                class="p-2 bg-gray-100 text-gray-500 rounded-md px-6 flex items-center justify-between gap-3">
+                <span> فلترة </span>
+                <i class="fa-solid fa-filter"></i> <!-- Filter Icon -->
+            </button>
+            <!-- Filter Menu -->
+            <div id="filter-menu"
+                class="space-y-4 hidden absolute w-72 p-5 text-sm bg-white shadow border rounded-md top-[140%] z-10">
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" value="pending" name="filter" id="">
+                    في انتظار الدفع
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" value="shipped" name="filter" id="">
+                    تم الشحن
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" value="delivered" name="filter" id="">
+                    تم التسليم
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" value="cancelled" name="filter" id="">
+                    ملغى
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Button -->
+        <div class="relative z-0 w-fit menu" data-menu="search">
+            <button id="search-button"
+                class="p-2 bg-gray-100 text-gray-500 rounded-md px-6 flex items-center justify-between gap-3">
+                <span> بحث </span>
+                <i class="fa-solid fa-search"></i> <!-- Search Icon -->
+            </button>
+            <!-- Search Menu -->
+            <div id="search-menu"
+                class="space-y-4 hidden absolute w-72 p-5 text-sm bg-white shadow border rounded-md top-[140%] z-10">
+                <input type="text" placeholder="ابحث عن طلب..." class="w-full p-2 border rounded-md">
+            </div>
+        </div>
+    </div>
+    <a href="/orders/add/" class="w-fit font-semibold text-white bg-blue-500 px-5 p-3 rounded-md flex items-center gap-4">
+        اضافة طلب
+        <i class="rounded fa-solid fa-plus"></i>
+    </a>
+</div>
+
+{% include 'orders/content/orders_table.html' %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll('[data-menu]');
+        let activeMenu = null;
+
+        // Function to close the menu
+        function closeMenu(menu) {
+            gsap.to(menu, {
+                opacity: 0,
+                y: -20,
+                duration: 0.3,
+                ease: "power2.in",
+                onComplete: function () {
+                    menu.classList.add("hidden");
+                }
+            });
+        }
+
+        // Function to open the menu
+        function openMenu(menu) {
+            gsap.fromTo(menu, {
+                opacity: 0,
+                y: -20
+            }, {
+                opacity: 1,
+                y: 0,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+            menu.classList.remove("hidden");
+        }
+
+        // Add event listeners for buttons
+        buttons.forEach(button => {
+            button.addEventListener("click", function () {
+                const menuType = this.getAttribute("data-menu");
+                const menu = document.querySelector(`#${menuType}-menu`);
+
+                // If another menu is open, close it
+                if (activeMenu && activeMenu !== menu) {
+                    closeMenu(activeMenu);
+                }
+
+                // Toggle the current menu
+                if (menu.classList.contains("hidden")) {
+                    openMenu(menu);
+                    activeMenu = menu;
+                } else {
+                    closeMenu(menu);
+                    activeMenu = null;
+                }
+            });
+        });
+
+        // Close the active menu if click is outside
+        document.addEventListener("click", function (event) {
+            const isClickInsideMenu = event.target.closest('.menu');
+            if (!isClickInsideMenu && activeMenu) {
+                closeMenu(activeMenu);
+                activeMenu = null;
+            }
+        });
+
+        // Prevent menu from closing when clicking inside the input (search)
+        const searchMenu = document.querySelector('#search-menu');
+        const searchInput = searchMenu ? searchMenu.querySelector('input') : null;
+
+        if (searchInput) {
+            searchInput.addEventListener('click', function (event) {
+                event.stopPropagation(); // Prevent closing when clicking inside the search input
+            });
+        }
+    });
+</script>
+
+{% endblock content %}
